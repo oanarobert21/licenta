@@ -1,0 +1,61 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: rgb(255, 255, 255);
+    overflow: hidden;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #f9f9f9; 
+    border-radius: 10px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    max-width: 100rem;
+    height: 25rem;
+    gap: 20px; 
+  }
+  
+  .text {
+    font-size: 1.8rem;
+    font-family: 'Poppins';
+    color: #333; /* Darker text for better readability */
+  }
+  
+  .imagine img {
+    border-radius: 50%; /* Makes the image circular */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Soft shadow for the image */
+  }
+  
+  .btnPontaj .p-button, .btnConcediu .p-button {
+    width: 110%; /* Full width buttons */
+    font-size: 1.5rem;
+  }
+
+  .submit-button{
+    margin-bottom: 30px;
+  }
+  
+  @media (max-width: 768px) {
+    .wrapper {
+      flex-direction: column; /* Stack elements vertically on smaller screens */
+      width: 20rem;
+    }
+  
+    .text {
+      font-size: 1rem; /* Smaller text on smaller screens */
+    }
+  }
+  
