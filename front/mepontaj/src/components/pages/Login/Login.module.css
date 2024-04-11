@@ -38,13 +38,13 @@ body {
     margin-bottom: 20px; /* Adds space below the title */
 }
 
-.wrapper .input-box {
+.wrapper .inputBox {
     position: relative;
     width: 100%;
     margin: 20px 0;
 }
 
-.input-box input {
+.inputBox input {
     width: 100%;
     height: 50px;
     background: #f0f2f5; /* Soft background color for input */
@@ -56,11 +56,11 @@ body {
     transition: border-color 0.3s; /* Smooth transition for focus effect */
 }
 
-.input-box input::placeholder {
+.inputBox input::placeholder {
     color: #aaa; /* Lighter placeholder text */
 }
 
-.input-box .icon {
+.inputBox .icon {
     position: absolute;
     right: 20px;
     top: 50%;
@@ -95,13 +95,13 @@ body {
         font-size: 1.5em; /* Adjust the size of the heading */
     }
 
-    .input-box input,
-    .input-box .icon,
+    .inputBox input,
+    .inputBox .icon,
     .wrapper button {
         height: 40px; /* Adjust height for better fit on small screens */
     }
 
-    .input-box .icon {
+    .inputBox .icon {
         right: 15px; /* Adjust icon positioning */
     }
 }
@@ -112,7 +112,7 @@ body {
         /* padding: 30px 10px;  */
     }
 
-    .input-box input,
+    .inputBox input,
     .wrapper button {
         font-size: 0.9em; /* Smaller font size for very small screens */
     }

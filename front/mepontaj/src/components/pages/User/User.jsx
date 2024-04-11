@@ -1,11 +1,11 @@
-import React, {useState,useRef} from 'react'
-import './User.css'
+import React, { useState } from 'react';
+import styles from './User.module.css';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
-import { InputTextarea } from "primereact/inputtextarea";
-import 'primeflex/primeflex.css';  
+import { InputTextarea } from 'primereact/inputtextarea';
+import 'primeflex/primeflex.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 const User = () => {
@@ -14,6 +14,7 @@ const User = () => {
     const [dates, setDates] = useState(null);
     const [value, setValue] = useState('');
     const [isFormValid, setIsFormValid] = useState(true);
+
     const handleSubmit = () => {
         if (!tipConcediu || !dates || !value.trim()) {
             setIsFormValid(false);
@@ -22,11 +23,8 @@ const User = () => {
             setVisible(false);
         }
     };
-    const footerContent = (
-        <div>
-            <Button label="Trimite" icon="pi pi-check" onClick={handleSubmit} autoFocus />
-        </div>
-    );
+
+
     const concedii = [
         { name: 'De odihnă', code: 'CO' },
         { name: 'Pentru formare profesională', code: 'CFP' },
@@ -43,35 +41,36 @@ const User = () => {
         { name: 'De acomodare', code: 'CA' },
         { name: 'De îngrijitor', code: 'CI' }
     ];
-    
-  return (
-    <div className="wrapper">
-        <div className="text">Bine ai venit, user!</div>
-        <div className="imagine">
-        <img src={require('./../../assets/muncitor-2.png')} width="100px" height="100px" /></div>
-        <div className="btnPontaj">
-        <Button label="Pontează-te" severity="secondary" text raised/></div>
-        <div className="btnConcediu">
-        <Button label="Cerere concediu" severity="secondary" text raised onClick={() => setVisible(true)} /></div>
-        <Dialog visible={visible} style={{ width: '40rem' }} onHide={() => setVisible(false)}>
-        <div className="card flex justify-content-center">
-            <div className="flex flex-column gap-2">
-                <label htmlFor="username">Tip concediu</label>
-                <Dropdown value={tipConcediu} onChange={(e) => setConcediu(e.value)} options={concedii} optionLabel="name" 
-                placeholder="Tip concediu" className="w-full md:w-14rem" />
-                <label htmlFor="username">Perioadă concediu</label>
-                <Calendar value={dates} onChange={(e) => setDates(e.value)} selectionMode="range" readOnlyInput hideOnRangeSelection className="w-full md:w-14rem" />
-                <label htmlFor="username">Motiv</label>
-                <InputTextarea autoResize value={value} onChange={(e) => setValue(e.target.value)} rows={5} cols={30} className="w-full md:w-14rem" />
-                {!isFormValid && <small className="p-error">Toate câmpurile trebuie completate.</small>}
-                <Button className="submit-button" type="button" label="Submit" onClick={handleSubmit} />
+
+    return (
+        <div className={styles.wrapper}>
+            <div className={styles.text}>Bine ai venit, user!</div>
+            <div className={styles.imagine}>
+                <img src={require('./../../assets/muncitor-2.png')} alt="User" width="100px" height="100px" />
             </div>
+            <div className={styles.btnPontaj}>
+                <Button label="Pontează-te" severity="secondary" text raised />
+            </div>
+            <div className={styles.btnConcediu}>
+                <Button label="Cerere concediu" severity="secondary" text raised onClick={() => setVisible(true)} />
+            </div>
+            <Dialog visible={visible} style={{ width: '40rem' }} onHide={() => setVisible(false)}>
+                <div className="card flex justify-content-center">
+                    <div className="flex flex-column gap-2">
+                        <label htmlFor="username">Tip concediu</label>
+                        <Dropdown value={tipConcediu} onChange={(e) => setConcediu(e.value)} options={concedii} optionLabel="name" 
+                                  placeholder="Tip concediu" className="w-full md:w-14rem" />
+                        <label htmlFor="username">Perioadă concediu</label>
+                        <Calendar value={dates} onChange={(e) => setDates(e.value)} selectionMode="range" readOnlyInput hideOnRangeSelection className="w-full md:w-14rem" />
+                        <label htmlFor="username">Motiv</label>
+                        <InputTextarea autoResize value={value} onChange={(e) => setValue(e.target.value)} rows={5} cols={30} className="w-full md:w-14rem" />
+                        {!isFormValid && <small className="p-error">Toate câmpurile trebuie completate.</small>}
+                        <Button className={styles.submitButton} type="button" label="Submit" onClick={handleSubmit} />
+                    </div>
+                </div>
+            </Dialog>
         </div>
-        
-        </Dialog>
-       
-    </div>
-  )
+    );
 }
 
-export default User
+export default User;
