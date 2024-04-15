@@ -6,6 +6,7 @@ import { IoMdLock } from "react-icons/io";
 
 const Login = () => {
     return (
+        <div className={styles.loginContainer}>
         <div className={styles.wrapper}>
             <form action="">
             <h1>Login</h1>
@@ -20,6 +21,7 @@ const Login = () => {
             <button className={styles.buton} type="submit">Login</button>
             </form>
         </div>
+    </div>
     )
 }
 

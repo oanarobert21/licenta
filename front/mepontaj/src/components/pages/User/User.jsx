@@ -43,6 +43,7 @@ const User = () => {
     ];
 
     return (
+        <div className={styles.userContainer}>
         <div className={styles.wrapper}>
             <div className={styles.text}>Bine ai venit, user!</div>
             <div className={styles.imagine}>
@@ -69,6 +70,7 @@ const User = () => {
                     </div>
                 </div>
             </Dialog>
+        </div>
         </div>
     );
 }

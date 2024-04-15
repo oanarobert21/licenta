@@ -10,11 +10,12 @@
     100% { background-position: 0% 50%; }
 }
 
-body {
+.loginContainer{
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    width: 100%;
     background-image: linear-gradient(300deg, #d3b2b2 0%, #f78484 80%);
     background-size: 200% 200%; /* Permite gradientului să se miște */
     animation: moveGradient 5s ease infinite; /* Animatie mai lentă */
