@@ -3,7 +3,6 @@ import styles from './Login.module.css';
 import { FaRegUserCircle} from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 
-
 const Login = () => {
     return (
         <div className={styles.loginContainer}>

@@ -5,8 +5,7 @@ import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea';
-import 'primeflex/primeflex.css';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primeflex/primeflex.css'; 
 
 const User = () => {
     const [visible, setVisible] = useState(false);
