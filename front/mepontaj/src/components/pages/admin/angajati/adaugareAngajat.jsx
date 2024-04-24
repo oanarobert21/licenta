@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { Password } from 'primereact/password';
@@ -8,6 +8,7 @@ import { Toast } from 'primereact/toast';
 import { Box } from '@mui/material';
 import Header from '../Header';
 import './adaugareAngajati.css'; 
+import emailjs from '@emailjs/browser';
 
 const AdaugareAngajat = () => {
     const [nume, setNume] = useState('');
@@ -25,6 +26,24 @@ const AdaugareAngajat = () => {
             setCNP(input);
         }
     };
+
+    const sendEmail = async () => {
+        const serviceId = "service_kcvdsh5";
+        const templateId = "template_5mfr32x";
+        try {
+          setLoading(true);
+          await emailjs.send(serviceId, templateId, {
+            nume: nume,
+            prenume: prenume,
+            email: email,
+            parola: parola
+          });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
+        }
+    }
 
     const load = () => {
         //setLoading(true);
@@ -47,6 +66,7 @@ const AdaugareAngajat = () => {
         .then(data => {
             toast.current.show({ severity: 'success', summary: 'Adaugat', detail: 'Angajat adaugat cu succes!' });
             setLoading(false);
+            //sendEmail();
         })
         .catch(errors => {
             console.error('Error:', errors);
@@ -60,6 +80,9 @@ const AdaugareAngajat = () => {
             setLoading(false);
         });
     };
+
+    useEffect(() => emailjs.init("HbUMSyK2TONpeA8fs"), []);
+    
 
     return (
         <div className="app">
@@ -98,7 +121,7 @@ const AdaugareAngajat = () => {
                     </FloatLabel>
                 </div>
                 <div className="btn">
-                    <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
+                    <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={() => { load();}} />
                 </div>
                 <Toast ref={toast} />
             </div>
