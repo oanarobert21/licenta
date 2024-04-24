@@ -1,32 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import '../admin.css';
 import { Box } from '@mui/material';
 import Header from '../Header';
 import { InputText } from 'primereact/inputtext';
 import { FloatLabel } from 'primereact/floatlabel';
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
 import '../angajati/adaugareAngajati.css';
 
 const AdaugareSantier = () => {
-
     const [nume, setNume] = useState('');
-    const [lat, setLat] = useState('');
-    const [long, setLong] = useState('');
+    const [latitudine, setLat] = useState('');
+    const [longitudine, setLong] = useState('');
     const [raza, setRaza] = useState('');
     const [localitate, setLocalitate] = useState('');
     const [judet, setJudet] = useState('');
     const [adresa, setAdresa] = useState('');
-
     const [loading, setLoading] = useState(false);
+    const toast = useRef(null);
 
     const load = () => {
         setLoading(true);
-
-        setTimeout(() => {
+        const data = { nume, latitudine, longitudine, raza, localitate, judet, adresa };
+        fetch('http://localhost:8090/api/santiere/addSantier', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw (errData.message || errData.errors);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            toast.current.show({ severity: 'success', summary: 'Adaugat', detail: 'Santier adaugat cu succes!' });
             setLoading(false);
-        }, 2000);
+        })
+        .catch(errors => {
+            console.error('Error:', errors);
+            let detailMessage;
+            if (Array.isArray(errors)) {
+                detailMessage = errors.join(", "); 
+            } else {
+                detailMessage = errors; 
+            }
+            toast.current.show({ severity: 'error', summary: 'Eroare', detail: detailMessage });
+            setLoading(false);
+        });
     };
-
+    
     return (
         <div className="content">
             <Box m="20px">
@@ -38,11 +65,11 @@ const AdaugareSantier = () => {
                     <label htmlFor="nume">Nume</label>
                 </FloatLabel>
                 <FloatLabel className="p-float-label">
-                    <InputText id="lat" value={lat} onChange={(e) => setLat(e.target.value)} />
+                    <InputText id="lat" value={latitudine} onChange={(e) => setLat(e.target.value)} />
                     <label htmlFor="lat">Latitudine</label>
                 </FloatLabel>
                 <FloatLabel className="p-float-label">
-                    <InputText id="long" value={long} onChange={(e) => setLong(e.target.value)} />
+                    <InputText id="long" value={longitudine} onChange={(e) => setLong(e.target.value)} />
                     <label htmlFor="long">Longitudine</label>
                 </FloatLabel>
                 <FloatLabel className="p-float-label">
@@ -65,7 +92,7 @@ const AdaugareSantier = () => {
             <div className="btn">
             <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
             </div>
-
+            <Toast ref={toast} />
         </div>
     );
 }

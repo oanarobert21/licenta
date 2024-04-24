@@ -7,172 +7,116 @@ import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { MultiSelect } from 'primereact/multiselect';
-import { Tag } from 'primereact/tag';
-import { TriStateCheckbox } from 'primereact/tristatecheckbox';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
 import '../admin.css';
 
 const Angajati = () => {
-  const [customers, setCustomers] = useState(null);
-  const [filters, setFilters] = useState({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-      'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-      representative: { value: null, matchMode: FilterMatchMode.IN },
-      status: { value: null, matchMode: FilterMatchMode.EQUALS },
-      verified: { value: null, matchMode: FilterMatchMode.EQUALS }
-  });
-  const [loading, setLoading] = useState(true);
-  const [globalFilterValue, setGlobalFilterValue] = useState('');
-  const [representatives] = useState([
-      { name: 'Amy Elsner', image: 'amyelsner.png' },
-      { name: 'Anna Fali', image: 'annafali.png' },
-      { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-      { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-      { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-      { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-      { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-      { name: 'Onyama Limba', image: 'onyamalimba.png' },
-      { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-      { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-  ]);
-  const [statuses] = useState(['unqualified', 'qualified', 'new', 'negotiation', 'renewal']);
+    const [employees, setEmployees] = useState([]);
+    const [employee, setEmployee] = useState(null);
+    const [displayDialog, setDisplayDialog] = useState(false);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const handleCNPChange = (e) => {
+        const input = e.target.value;
+        if (input === '' || (input.length <= 13 && /^[0-9\b]+$/.test(input))) {
+            setEmployee({...employee, cnp: input});
+        }
+    };
 
-  const getSeverity = (status) => {
-      switch (status) {
-          case 'unqualified':
-              return 'danger';
+    // Define fetchEmployees function inside the component
+    const fetchEmployees = async () => {
+        const response = await fetch('http://localhost:8090/api/angajati/getAllAngajati');
+        if (response.ok) {
+            const data = await response.json();
+            setEmployees(data);
+        } else {
+            console.error('Failed to fetch employees');
+        }
+    };
 
-          case 'qualified':
-              return 'success';
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
 
-          case 'new':
-              return 'info';
+    const onRowSelect = (event) => {
+        setEmployee(event.data);
+        setDisplayDialog(true);
+    };
 
-          case 'negotiation':
-              return 'warning';
+    const handleInputChange = (e, name) => {
+        const val = (e.target && e.target.value) || '';
+        let _employee = {...employee};
+        _employee[`${name}`] = val;
+        setEmployee(_employee);
+    };
 
-          case 'renewal':
-              return null;
-      }
-  };
+    const saveEmployee = async () => {
+        const response = await fetch('http://localhost:8090/api/angajati/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employee),
+        });
+        if (response.ok) {
+            setDisplayDialog(false);
+            fetchEmployees(); 
+        }
+    };
 
-  const getCustomers = (data) => {
-      return [...(data || [])].map((d) => {
-          d.date = new Date(d.date);
+    const dialogFooter = (
+        <React.Fragment>
+            <Button label="Save" icon="pi pi-check" onClick={saveEmployee} />
+            <Button label="Cancel" icon="pi pi-times" onClick={() => setDisplayDialog(false)} />
+        </React.Fragment>
+    );
 
-          return d;
-      });
-  };
+    return (
+        <Box m="20px">
+            <Header title="Angajați" subtitle="Vizualizare angajați" />
+            <DataTable value={employees} paginator rows={10} 
+                globalFilter={globalFilter} responsiveLayout="scroll"
+                selectionMode="single" onRowSelect={onRowSelect}>
+                <Column field="nume" header="Nume" />
+                <Column field="prenume" header="Prenume" />
+                <Column field="cnp" header="CNP" />
+                <Column field="dataAngajare" header="Data Angajare" />
+                <Column field="numarTelefon" header="Număr Telefon" />
+                <Column field="email" header="Email" />
+            </DataTable>
 
-  const onGlobalFilterChange = (e) => {
-      const value = e.target.value;
-      let _filters = { ...filters };
-
-      _filters['global'].value = value;
-
-      setFilters(_filters);
-      setGlobalFilterValue(value);
-  };
-
-  const renderHeader = () => {
-      return (
-          <div className="flex justify-content-end">
-              <span className="p-input-icon-left">
-                  <i className="pi pi-search" />
-                  <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
-              </span>
-          </div>
-      );
-  };
-
-  const countryBodyTemplate = (rowData) => {
-      return (
-          <div className="flex align-items-center gap-2">
-              <img alt="flag" src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`flag flag-${rowData.country.code}`} style={{ width: '24px' }} />
-              <span>{rowData.country.name}</span>
-          </div>
-      );
-  };
-
-  const representativeBodyTemplate = (rowData) => {
-      const representative = rowData.representative;
-
-      return (
-          <div className="flex align-items-center gap-2">
-              <img alt={representative.name} src={`https://primefaces.org/cdn/primereact/images/avatar/${representative.image}`} width="32" />
-              <span>{representative.name}</span>
-          </div>
-      );
-  };
-
-  const representativesItemTemplate = (option) => {
-      return (
-          <div className="flex align-items-center gap-2">
-              <img alt={option.name} src={`https://primefaces.org/cdn/primereact/images/avatar/${option.image}`} width="32" />
-              <span>{option.name}</span>
-          </div>
-      );
-  };
-
-  const statusBodyTemplate = (rowData) => {
-      return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
-  };
-
-  const statusItemTemplate = (option) => {
-      return <Tag value={option} severity={getSeverity(option)} />;
-  };
-
-  const verifiedBodyTemplate = (rowData) => {
-      return <i className={classNames('pi', { 'true-icon pi-check-circle': rowData.verified, 'false-icon pi-times-circle': !rowData.verified })}></i>;
-  };
-
-  const representativeRowFilterTemplate = (options) => {
-      return (
-          <MultiSelect
-              value={options.value}
-              options={representatives}
-              itemTemplate={representativesItemTemplate}
-              onChange={(e) => options.filterApplyCallback(e.value)}
-              optionLabel="name"
-              placeholder="Any"
-              className="p-column-filter"
-              maxSelectedLabels={1}
-              style={{ minWidth: '14rem' }}
-          />
-      );
-  };
-
-  const statusRowFilterTemplate = (options) => {
-      return (
-          <Dropdown value={options.value} options={statuses} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select One" className="p-column-filter" showClear style={{ minWidth: '12rem' }} />
-      );
-  };
-
-  const verifiedRowFilterTemplate = (options) => {
-      return <TriStateCheckbox value={options.value} onChange={(e) => options.filterApplyCallback(e.value)} />;
-  };
-
-  const header = renderHeader();
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  return (
-    <Box m="20px">
-      <Header title="Angajati" subtitle="Vizulizare angajați" />
-      <Box >
-      <DataTable value={customers} paginator rows={10} dataKey="id" filters={filters} filterDisplay="row" 
-                    globalFilterFields={['name', 'country.name', 'representative.name', 'status']} header={header} emptyMessage="Nu avem angajati.">
-                <Column field="name" header="Name" filter filterPlaceholder="Search by name" style={{ maxWidth: '14rem' }} />
-                <Column header="Country" filterField="country.name" style={{ minWidth: '12rem' }} body={countryBodyTemplate} filter filterPlaceholder="Search by country" />
-                <Column header="Agent" filterField="representative" showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
-                    body={representativeBodyTemplate} filter filterElement={representativeRowFilterTemplate} />
-                <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} body={verifiedBodyTemplate} filter filterElement={verifiedRowFilterTemplate} />
-      </DataTable>
-      </Box>
-    </Box>
-
-  );
-}
+            {employee && (
+                <Dialog visible={displayDialog} style={{ width: '450px' }} header="Edit Employee" modal footer={dialogFooter} onHide={() => setDisplayDialog(false)}>
+                    <div className="p-fluid">
+                        <div className="p-field">
+                            <label htmlFor="nume">Nume</label>
+                            <InputText id="nume" value={employee.nume} onChange={(e) => handleInputChange(e, 'nume')} />
+                        </div>
+                        <div className="p-field">
+                            <label htmlFor="prenume">Prenume</label>
+                            <InputText id="prenume" value={employee.prenume} onChange={(e) => handleInputChange(e, 'prenume')} />
+                        </div>
+                        <div className="p-field">
+                             <label htmlFor="cnp">CNP</label>
+                             <InputText id="cnp" value={employee.cnp} onChange={handleCNPChange} />
+                        </div>
+                        <div className="p-field">
+                            <label htmlFor="dataAngajare">Data angajare</label>
+                            <InputText id="cnp" value={employee.dataAngajare} onChange={(e) => handleInputChange(e, 'dataAngajare')} />
+                        </div>
+                        <div className="p-field">
+                            <label htmlFor="dataAngajare">Numar telefon</label>
+                            <InputText id="numarTelefon" value={employee.numarTelefon} onChange={(e) => handleInputChange(e, 'numarTelefon')} />
+                        </div>
+                        <div className="p-field">
+                            <label htmlFor="email">Email</label>
+                            <InputText id="email" value={employee.email} onChange={(e) => handleInputChange(e, 'email')} />
+                        </div>
+                    </div>
+                </Dialog>
+            )}
+        </Box>
+    );
+};
 
 export default Angajati;

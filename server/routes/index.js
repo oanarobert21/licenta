@@ -1,9 +1,11 @@
 const router = require("express").Router();
 
 const databaseRouter = require("./database");
-//const angataiRouter= require("./angajati");
+const angajatiRouter= require("./angajati");
+const santiereRouter = require("./santiere"); 
 
 router.use("/database",databaseRouter);
-//router.use("/user", angataiRouter);
+router.use("/angajati",angajatiRouter);
+router.use("/santiere",santiereRouter);
 
 module.exports= router;

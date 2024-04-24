@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef} from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { FloatLabel } from 'primereact/floatlabel';
+import { Toast } from 'primereact/toast';
 import { Box } from '@mui/material';
 import Header from '../Header';
 import './adaugareAngajati.css'; 
@@ -16,9 +17,8 @@ const AdaugareAngajat = () => {
     const [numarTelefon, setNumarTelefon] = useState('');
     const [email, setEmail] = useState('');
     const [parola, setParola] = useState('');
- 
-
-
+    const [loading, setLoading] = useState(false);
+    const toast = useRef(null);
     const handleCNPChange = (e) => {
         const input = e.target.value;
         if (input === '' || (input.length <= 13 && /^[0-9\b]+$/.test(input))) {
@@ -26,14 +26,39 @@ const AdaugareAngajat = () => {
         }
     };
 
-    const [loading, setLoading] = useState(false);
-
     const load = () => {
-        setLoading(true);
-
-        setTimeout(() => {
+        //setLoading(true);
+        const data = { nume, prenume, cnp, dataAngajare, numarTelefon, email, parola };
+        fetch('http://localhost:8090/api/angajati/addAngajat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => {
+                    throw (errData.message || errData.errors);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            toast.current.show({ severity: 'success', summary: 'Adaugat', detail: 'Angajat adaugat cu succes!' });
             setLoading(false);
-        }, 2000);
+        })
+        .catch(errors => {
+            console.error('Error:', errors);
+            let detailMessage;
+            if (Array.isArray(errors)) {
+                detailMessage = errors.join(", "); 
+            } else {
+                detailMessage = errors; 
+            }
+            toast.current.show({ severity: 'error', summary: 'Eroare', detail: detailMessage });
+            setLoading(false);
+        });
     };
 
     return (
@@ -75,6 +100,7 @@ const AdaugareAngajat = () => {
                 <div className="btn">
                     <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
                 </div>
+                <Toast ref={toast} />
             </div>
         </div>
     );
