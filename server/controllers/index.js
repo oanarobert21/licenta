@@ -1,11 +1,13 @@
 const databaseController = require("./database");
 const angajatiController = require("./angajati");
 const santiereController = require("./santiere"); 
+const pontajController = require("./pontaj");
 
 const controllers={
     databaseController,
     angajatiController,
-    santiereController
+    santiereController,
+    pontajController
 }
 
 module.exports= controllers;

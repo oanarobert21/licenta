@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './User.module.css';
 import {useNavigate} from 'react-router-dom';
 import { useUser } from './UserContext';
@@ -16,7 +16,11 @@ const User = () => {
     const [value, setValue] = useState('');
     const [isFormValid, setIsFormValid] = useState(true);
     const {user, setUser} = useUser();
+    const [userLocation, setUserLocation] = useState(null);
+    const [locationReady, setLocationReady] = useState(false); 
+    const [finalCheckOutReady, setFinalCheckOutReady] = useState(false);
     const navigate = useNavigate(); 
+
     const handleLogout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
@@ -52,6 +56,61 @@ const User = () => {
         { name: 'De îngrijitor', code: 'CI' }
     ];
 
+    const getLocation = (type) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation({ latitudine: latitude, longitudine: longitude });
+                    console.log('Locația a fost determinată:', latitude, longitude);
+                    // Odată ce locația este stabilită, apelează pontajul cu tipul specificat
+                    handlePontaj(type, { latitudine: latitude, longitudine: longitude });
+                },
+                (error) => {
+                    alert(`Eroare la determinarea locației: ${error.message}`);
+                },
+                { enableHighAccuracy: true }
+            );
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    };
+
+    const handlePontaj = async (type, location) => {
+        try {
+            const { latitudine, longitudine } = location;
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8090/api/pontaj/addPontaj', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    latitudine,
+                    longitudine,
+                    type
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(error.message);
+                return;
+            }
+
+            const data = await response.json();
+            console.log(`Răspuns pontaj ${type}:`, data);
+        } catch (error) {
+            console.error(`Eroare la pontajul ${type}:`, error);
+            alert(`Eroare la pontajul ${type}. Verificați logurile pentru detalii.`);
+        }
+    };
+
+    const performPontaj = (type) => {
+        getLocation(type);
+    };
+
     return (
         <div className={styles.userContainer}>
         <div className={styles.wrapper}>
@@ -60,10 +119,10 @@ const User = () => {
                 <img src={require('./../../assets/muncitor-2.png')} alt="User" width="100px" height="100px" />
             </div>
             <div className={styles.btnPontaj}>
-                <Button label="Pontaj inițial" severity="secondary" text raised />
+            <Button label="Pontaj inițial" severity="secondary" text raised onClick={() => performPontaj('start')} />
             </div>
             <div className={styles.btnPontaj}>
-                <Button label="Pontaj final" severity="secondary" text raised />
+            <Button label="Pontaj final" severity="secondary" text raised onClick={() => performPontaj('final')} />           
             </div>
             <div className={styles.btnConcediu}>
                 <Button label="Cerere concediu" severity="secondary" text raised onClick={() => setVisible(true)} />

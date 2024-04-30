@@ -13,6 +13,7 @@ const Login = () => {
     const { user, setUser } = useUser();
 
     const handleLogin = async (e) => {
+        // http://localhost:8090/api/angajati/login
         e.preventDefault();
         try {
             const response = await fetch('http://localhost:8090/api/angajati/login', {

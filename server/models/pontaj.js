@@ -17,10 +17,10 @@ module.exports=(sequelize, DataTypes) =>{
                 allowNull: false
             },
             start:{
-                type:DataTypes.TIME
+                type:DataTypes.DATE,
             },
             final:{
-                type:DataTypes.TIME
+                type:DataTypes.DATE,
             },
             durata:{
                 type:DataTypes.TIME,
