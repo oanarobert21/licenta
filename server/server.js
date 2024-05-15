@@ -10,8 +10,8 @@ app.use(express.json());
 // app.use(cors({ origin: "http://localhost:3000" }));
 
 app.use(cors({
-    origin: ["http://localhost:3000", "http://192.168.1.5:3000"], // Adaugă adresele IP necesare sau folosește '*' pentru toate originile (nu recomandat pentru producție)
-    credentials: true, // permite trimiterea cookie-urilor
+    origin: ["http://localhost:3000", "http://192.168.1.5:3000"], 
+    credentials: true, 
 }));
 
 app.use("/api", router);

@@ -45,6 +45,7 @@ const AdaugareAngajat = () => {
         }
     }
 
+    // fetch(process.env.API_URL+'api/angajati/addAngajat'
     const load = () => {
         //setLoading(true);
         const data = { nume, prenume, cnp, dataAngajare, numarTelefon, email, parola };

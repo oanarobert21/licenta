@@ -23,7 +23,7 @@ const Angajati = () => {
         }
     };
 
-    // Define fetchEmployees function inside the component
+
     const fetchEmployees = async () => {
         const response = await fetch('http://localhost:8090/api/angajati/getAllAngajati');
         if (response.ok) {
@@ -77,7 +77,7 @@ const Angajati = () => {
             <DataTable value={employees} paginator rows={10} 
                 globalFilter={globalFilter} responsiveLayout="scroll"
                 selectionMode="single" onRowSelect={onRowSelect}>
-                <Column field="nume" header="Nume" />
+                <Column field="nume" header="Nume" sortable filter filterPlaceholder="Search" style={{ width: '25%' }} />
                 <Column field="prenume" header="Prenume" />
                 <Column field="cnp" header="CNP" />
                 <Column field="dataAngajare" header="Data Angajare" />
@@ -86,7 +86,7 @@ const Angajati = () => {
             </DataTable>
 
             {employee && (
-                <Dialog visible={displayDialog} style={{ width: '450px' }} header="Edit Employee" modal footer={dialogFooter} onHide={() => setDisplayDialog(false)}>
+                <Dialog visible={displayDialog} style={{ width: '450px' }} header="Modificare date angajat" modal footer={dialogFooter} onHide={() => setDisplayDialog(false)}>
                     <div className="p-fluid">
                         <div className="p-field">
                             <label htmlFor="nume">Nume</label>

@@ -9,6 +9,8 @@ import Angajati from './pages/admin/angajati/angajati';
 import AdaugareAngajat from './pages/admin/angajati/adaugareAngajat';
 import AdaugareSantier from './pages/admin/santiere/adaugareSantier';
 import AsignareAngajat from './pages/admin/angajati/asignareAngajat';
+import Concedii from './pages/admin/concedii/concedii';
+import Santier from './pages/admin/santiere/santier';
 
 function Admin() {
   const [theme, colorMode] = useMode();
@@ -26,6 +28,8 @@ function Admin() {
               <Route path="adaugare-angajat" element={<AdaugareAngajat />} />
               <Route path="adaugare-santier" element={<AdaugareSantier />} />
               <Route path="asignare-angajat" element={<AsignareAngajat />} />
+              <Route path="concedii" element={<Concedii />} />
+              <Route path="santiere" element={<Santier />} />
             </Routes>
           </main>
         </div>

@@ -30,19 +30,27 @@ const AngajatiSantiere = Database.define('angajati_santiere', {
     }
 }, {
     tableName:"angajati_santier",
-    timestamps: false 
+    timestamps: true 
 });
 
 Angajati.belongsToMany(Santier, {
-    through:{model: AngajatiSantiere, unique: false}
+    through: AngajatiSantiere,
+    foreignKey: 'idAngajat',
+    otherKey: 'idSantier'
 });
 
-Santier.belongsToMany(Angajati,{
-    through:{model: AngajatiSantiere, unique: false}
+Santier.belongsToMany(Angajati, {
+    through: AngajatiSantiere,
+    foreignKey: 'idSantier',
+    otherKey: 'idAngajat'
 });
+
+AngajatiSantiere.belongsTo(Santier, { foreignKey: 'idSantier' });
+AngajatiSantiere.belongsTo(Angajati, { foreignKey: 'idAngajat' });
 
 Angajati.hasMany(Concedii, {
-    foreignKey:'idAngajat'
+    foreignKey:'idAngajat',
+    as:'concedii'
 });
 Concedii.belongsTo(Angajati, {
     foreignKey:'idAngajat'

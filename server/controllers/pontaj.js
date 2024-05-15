@@ -1,8 +1,22 @@
 const Angajati = require('../models').Angajati;
 const Pontaj = require('../models').Pontaj;
+const Santier = require('../models').Santier;
+const AngajatiSantiere = require('../models').AngajatiSantiere;
+
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 
+function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371; 
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
 
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -18,7 +32,6 @@ const verifyToken = (req, res, next) => {
     return next();
 };
 
-
 const addPontaj = async (req, res) => {
     try {
         const { latitudine, longitudine, type } = req.body;
@@ -28,14 +41,33 @@ const addPontaj = async (req, res) => {
         const todayEnd = new Date(todayStart);
         todayEnd.setDate(todayStart.getDate() + 1);
 
+        const assignedSites = await AngajatiSantiere.findAll({
+            where: { idAngajat: idAngajat },
+            include: [{
+                model: Santier,
+                required: true
+            }]
+        });
+
+        let isWithinAnySite = false;
+        assignedSites.forEach(site => {
+            const distance = haversine(latitudine, longitudine, site.Santier.latitudine, site.Santier.longitudine);
+            if (distance <= site.Santier.raza) {
+                isWithinAnySite = true;
+                idSantier = site.Santier.id;
+            }
+        });
+
+        if (!isWithinAnySite) {
+            return res.status(403).json({ message: "Nu esti in perimetrul niciunui santier asignat." });
+        }
+
         if (type === 'start') {
             const existingPontaj = await Pontaj.findOne({
                 where: {
                     idAngajat: idAngajat,
-                    start: {
-                        [Op.gte]: todayStart,
-                        [Op.lt]: todayEnd
-                    }
+                    start: { [Op.gte]: new Date().setHours(0, 0, 0, 0) },
+                    final: null
                 }
             });
 
@@ -45,25 +77,23 @@ const addPontaj = async (req, res) => {
 
             const newPontaj = await Pontaj.create({
                 idAngajat,
+                idSantier,
                 latitudine,
                 longitudine,
-                start: new Date() 
+                start: new Date()
             });
             return res.status(201).json(newPontaj);
         } else if (type === 'final') {
             const pontaj = await Pontaj.findOne({
                 where: {
                     idAngajat: idAngajat,
-                    start: {
-                        [Op.gte]: todayStart,
-                        [Op.lt]: todayEnd
-                    },
                     final: null
                 }
             });
             if (!pontaj) {
-                return res.status(404).json({ message: 'Pontajul de început nu a fost găsit pentru înregistrarea finalului.' });
+                return res.status(404).json({ message: 'Pontajul de început nu a fost găsit pentru înregistrarea finalului sau a fost deja realizat pontajul final .' });
             }
+            
             pontaj.final = new Date();
             const durationInMilliseconds = pontaj.final.getTime() - pontaj.start.getTime(); 
             const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
@@ -72,20 +102,19 @@ const addPontaj = async (req, res) => {
             const minutes = totalMinutes % 60;
             const hours = (totalMinutes - minutes) / 60;
             pontaj.durata = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
+
             await pontaj.save();
             return res.status(200).json(pontaj);
         } else {
             return res.status(400).json({ message: 'Tipul de pontaj specificat este invalid.' });
         }
     } catch (error) {
-        console.log(error);
+        console.error('Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
 
-
 module.exports = {
-    addPontaj, // exportă funcția addPontaj
-    verifyToken // exportă middleware-ul verifyToken
+    addPontaj,
+    verifyToken
 };

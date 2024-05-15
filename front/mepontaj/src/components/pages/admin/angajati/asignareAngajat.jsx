@@ -16,7 +16,7 @@ const AsignareAngajat = () => {
     useEffect(() => {
         fetchAngajati();
         fetchSantiere();
-    }, []); // The empty array ensures these functions are called only once when the component mounts
+    }, []); 
 
     async function fetchAngajati() {
         try {
@@ -27,7 +27,7 @@ const AsignareAngajat = () => {
             const data = await response.json();
             const formattedAngajati = data.map(angajat => ({
                 label: `${angajat.nume} ${angajat.prenume}`,
-                value: angajat.id 
+                value: angajat.idAngajat 
             }));
             setAngajati(formattedAngajati);
         } catch (error) {
@@ -54,11 +54,35 @@ const AsignareAngajat = () => {
         }
     }
 
-    const save = () => {
-        // Implement the save logic here
-        // You might want to send 'selectedAngajat' and 'selectedSantiere' to your backend
-        toast.current.show({ severity: 'success', summary: 'Success', detail: 'Date salvate' });
+    const save = async () => {
+        if (!selectedAngajat || selectedSantiere.length === 0) {
+            toast.current.show({ severity: 'warn', summary: 'Warning', detail: 'Te rog selectează un angajat și cel puțin un șantier.' });
+            return;
+        }
+        try {
+            const response = await fetch('http://localhost:8090/api/santiere/asignareSantier', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    idAngajat: selectedAngajat,
+                    idSantiere: selectedSantiere
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save data');
+            }
+            await response.json(); 
+            toast.current.show({ severity: 'success', summary: 'Success', detail: 'Datele au fost salvate cu succes!' });
+        } catch (error) {
+            toast.current.show({ severity: 'error', summary: 'Saving Error', detail: error.message });
+            console.error('Error:', error);
+        }
+        console.log("Trimite la backend:", { idAngajat: selectedAngajat, idSantiere: selectedSantiere });
     };
+    
 
     return (
         <div className="content">

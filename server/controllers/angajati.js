@@ -1,7 +1,6 @@
 const Angajati = require('../models').Angajati;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const mg = require('mailgun-js');
 const Mailgun = require('mailgun-js');
 
 const validareAngajat = async (angajatBody) => {
@@ -12,7 +11,7 @@ const validareAngajat = async (angajatBody) => {
             errors.push(`${field} trebuie completat.`);
         }
     });
-    // Validate specific formats
+
     if (angajatBody.email && !/\S+@\S+\.\S+/.test(angajatBody.email)) {
         errors.push('Formatul email-ului este incomplet.');
     }
@@ -24,16 +23,16 @@ const validareAngajat = async (angajatBody) => {
     if (angajatBody.numarTelefon && !/^\d{10}$/.test(angajatBody.numarTelefon)) {
         errors.push('Numarul de telefon trebuie sa fie de 10 caractere.');
     }
-    // Password strength validation could also be added here
+
     if (angajatBody.parola && angajatBody.parola.length < 1) {
         errors.push('Parola trebuie adaugata.');
     }
-    // Check if the email is already in use
+
     const emailExists = await Angajati.findOne({ where: { email: angajatBody.email } });
     if (emailExists) {
         errors.push('Email-ul este deja folosit.');
     }
-    // Check if the CNP is already in use
+
     const cnpExists = await Angajati.findOne({ where: { cnp: angajatBody.cnp } });
     if (cnpExists) {
         errors.push('CNP-ul este deja folosit.');

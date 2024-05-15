@@ -39,16 +39,16 @@ body {
     font-size: 1.8rem;
     font-family: 'Poppins';
     text-align: center;
-    color: #333; /* Darker text for better readability */
+    color: #333; 
   }
   
   .imagine img {
-    border-radius: 50%; /* Makes the image circular */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Soft shadow for the image */
+    border-radius: 50%; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
   }
   
   .btnPontaj .p-button, .btnConcediu .p-button {
-    width: 110%; /* Full width buttons */
+    width: 110%; 
     font-size: 1.5rem;
   }
 
@@ -58,12 +58,12 @@ body {
   
   @media (max-width: 768px) {
     .wrapper {
-      flex-direction: column; /* Stack elements vertically on smaller screens */
+      flex-direction: column; 
       width: 20rem;
     }
   
     .text {
-      font-size: 1rem; /* Smaller text on smaller screens */
+      font-size: 1rem; 
     }
   }
   

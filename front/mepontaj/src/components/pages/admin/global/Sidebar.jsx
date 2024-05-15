@@ -62,7 +62,6 @@ const Sidebar = () => {
     >
       <ProSidebar collapsed={isCollapsed}>
         <Menu iconShape="square">
-          {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
             icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
@@ -139,15 +138,22 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="FAQ Page"
-              to="/faq"
+              title="Vizualizare șantiere"
+              to="/admin/santiere"
               icon={<HelpOutlineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+            Concedii
+            </Typography>
             <Item
-              title="Bar Chart"
-              to="/bar"
+              title="Vizualizare concedii"
+              to="/admin/concedii"
               icon={<BarChartOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

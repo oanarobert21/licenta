@@ -7,18 +7,22 @@ import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import {format} from 'date-fns';
 import 'primeflex/primeflex.css'; 
 
 const User = () => {
     const [visible, setVisible] = useState(false);
     const [tipConcediu, setConcediu] = useState(null);
-    const [dates, setDates] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [finalDate, setFinalDate] = useState(null);
     const [value, setValue] = useState('');
     const [isFormValid, setIsFormValid] = useState(true);
     const {user, setUser} = useUser();
     const [userLocation, setUserLocation] = useState(null);
-    const [locationReady, setLocationReady] = useState(false); 
-    const [finalCheckOutReady, setFinalCheckOutReady] = useState(false);
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [showConcedii, setShowConcedii] = useState([]);
     const navigate = useNavigate(); 
 
     const handleLogout = () => {
@@ -30,14 +34,14 @@ const User = () => {
     };
 
     const handleSubmit = () => {
-        if (!tipConcediu || !dates || !value.trim()) {
+        if (!tipConcediu || !startDate || !finalDate || !value.trim()) {
             setIsFormValid(false);
         } else {
             setIsFormValid(true);
             setVisible(false);
+            handleConcediu();
         }
     };
-
 
     const concedii = [
         { name: 'De odihnă', code: 'CO' },
@@ -63,11 +67,11 @@ const User = () => {
                     const { latitude, longitude } = position.coords;
                     setUserLocation({ latitudine: latitude, longitudine: longitude });
                     console.log('Locația a fost determinată:', latitude, longitude);
-                    // Odată ce locația este stabilită, apelează pontajul cu tipul specificat
                     handlePontaj(type, { latitudine: latitude, longitudine: longitude });
                 },
                 (error) => {
                     alert(`Eroare la determinarea locației: ${error.message}`);
+                    console.log(error);
                 },
                 { enableHighAccuracy: true }
             );
@@ -111,6 +115,70 @@ const User = () => {
         getLocation(type);
     };
 
+    const handleConcediu = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8090/api/concedii/addConcediu', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    tipConcediu: tipConcediu.name,
+                    dataInceput: startDate,
+                    dataSfarsit: finalDate,
+                    motiv: value,
+                    status: 'În așteptare'
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(error.message);
+                return;
+            }
+            const data = await response.json();
+            fetchConcedii(user.id);
+        } catch (error) {
+            console.error('Eroare la adăugarea concediului:', error);
+            alert('Eroare la adăugarea concediului. Verificați logurile pentru detalii.');
+        }
+    }
+
+    const fetchConcedii = async (idAngajat) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:8090/api/concedii/getConcediuByIdAngajat/${idAngajat}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setShowConcedii(data);
+            } else {
+                console.error('Failed to fetch concedii');
+            }
+        } catch (error) {
+            console.error('Eroare la aducerea concediilor:', error);
+            alert('Eroare la aducerea concediilor. Verificați logurile pentru detalii.');
+        }
+    }
+
+    useEffect(() => {
+            fetchConcedii(user.id);
+    }, [user]);
+    
+    const dialogFooterTemplate = () => {
+        return <Button label="Ok" icon="pi pi-check" onClick={() => setDialogVisible(false)} />;
+    };
+
+    const formatDate = (date) => {
+        return format(new Date(date), 'dd/MM/yyyy');
+    }
+
     return (
         <div className={styles.userContainer}>
         <div className={styles.wrapper}>
@@ -128,6 +196,20 @@ const User = () => {
                 <Button label="Cerere concediu" severity="secondary" text raised onClick={() => setVisible(true)} />
             </div>
             <div className={styles.btnConcediu}>
+                <Button label="Status cereri" severity="secondary" text raised onClick={() => setDialogVisible(true)} />
+            </div>
+            <div>
+            <Dialog header="Status cereri" visible={dialogVisible} style={{ width: '75vw' }} maximizable
+            modal contentStyle={{ height: '300px' }} onHide={() => setDialogVisible(false)} footer={dialogFooterTemplate}>
+            <DataTable value={showConcedii} scrollable scrollHeight="flex" tableStyle={{ minWidth: '50rem' }}>
+            <Column field="tipConcediu" header="Tip concediu"></Column>
+            <Column field="dataInceput" header="Data început" body={(rowData) => formatDate(rowData.dataInceput)}></Column>
+            <Column field="dataSfarsit" header="Data sfârșit" body={(rowData) => formatDate(rowData.dataSfarsit)}></Column>
+            <Column field="status" header="Status"></Column>
+            </DataTable>
+            </Dialog>
+            </div>
+            <div className={styles.btnConcediu}>
                 <Button label="Iesire" severity="secondary" text raised onClick={() => handleLogout()} />
             </div>
             <Dialog visible={visible} style={{ width: '40rem' }} onHide={() => setVisible(false)}>
@@ -136,8 +218,10 @@ const User = () => {
                         <label htmlFor="username">Tip concediu</label>
                         <Dropdown value={tipConcediu} onChange={(e) => setConcediu(e.value)} options={concedii} optionLabel="name" 
                                   placeholder="Tip concediu" className="w-full md:w-14rem" />
-                        <label htmlFor="username">Perioadă concediu</label>
-                        <Calendar value={dates} onChange={(e) => setDates(e.value)} selectionMode="range" readOnlyInput hideOnRangeSelection className="w-full md:w-14rem" />
+                        <label htmlFor="username">Dată început concediu</label>
+                        <Calendar value={startDate} onChange={(e) => setStartDate(e.value)} dateFormat="dd/mm/yy" className="w-full md:w-14rem" />
+                        <label htmlFor="username">Dată sfârșit concediu</label>
+                        <Calendar value={finalDate} onChange={(e) => setFinalDate(e.value)} dateFormat="dd/mm/yy" className="w-full md:w-14rem" />                           
                         <label htmlFor="username">Motiv</label>
                         <InputTextarea autoResize value={value} onChange={(e) => setValue(e.target.value)} rows={5} cols={30} className="w-full md:w-14rem" />
                         {!isFormValid && <small className="p-error">Toate câmpurile trebuie completate.</small>}

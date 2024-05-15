@@ -1,4 +1,6 @@
 const Santier = require('../models').Santier;
+const Angajati = require('../models').Angajati;
+const AngajatiSantiere = require('../models').AngajatiSantiere;
 
 const validareSantier = async (santierBody) => {
     const errors = [];
@@ -44,6 +46,51 @@ const controller = {
         }
         catch(err){
             res.status(500).json({message: err.message});
+        }
+    },
+    asignareSantier: async (req, res) => {
+        const { idAngajat, idSantiere } = req.body; 
+        try {
+        if (!idAngajat || !idSantiere || !idSantiere.length) {
+            return res.status(400).json({ message: "Informații insuficiente pentru a asigna angajatul." });
+        }
+        const angajat = await Angajati.findByPk(idAngajat);
+        if (!angajat) {
+            return res.status(404).json({ message: "Angajatul nu a fost găsit." });
+        }
+        for (const idSantier of idSantiere) {
+            const santier = await Santier.findByPk(idSantier);
+            if (!santier) {
+                return res.status(404).json({ message: `Santierul cu ID-ul ${idSantier} nu există.` });
+            }
+        }
+        const assignments = idSantiere.map(idSantier => ({
+            idAngajat: idAngajat,
+            idSantier: idSantier
+        }));
+        await AngajatiSantiere.bulkCreate(assignments);
+        res.status(201).json({
+            message: "Angajatul a fost asignat cu succes la șantierele selectate."
+        });
+    } catch (error) {
+        console.error('Eroare la asignarea angajatului la șantiere:', error);
+        res.status(500).json({ message: error.message });
+    }
+    },
+    updateSantier: async (req, res) => {
+        const santier = await Santier.findOne({ where: { id: req.body.id} });
+        if (santier) {
+            santier.nume = req.body.nume;
+            santier.latitudine=req.body.latitudine;
+            santier.longitudine=req.body.longitudine;
+            santier.raza=req.body.raza;
+            santier.localitate=req.body.localitate;
+            santier.judet=req.body.judet;
+            santier.adresa=req.body.adresa;
+            await santier.save();
+            res.status(200).json({ message: 'Santier actualizat cu succes!' });
+        } else {
+            res.status(404).json({ message: 'Santierul nu a fost gasit!' });
         }
     }
 }

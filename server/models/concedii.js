@@ -8,6 +8,10 @@ module.exports =(sequelize, DataTypes) => {
                 primaryKey: true,
                 allowNull: false
             },
+            tipConcediu:{
+                type:DataTypes.STRING,
+                allowNull: false
+            },
             dataInceput:{
                 type:DataTypes.DATE,
                 allowNull: false
