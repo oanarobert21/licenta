@@ -67,7 +67,7 @@ const AdaugareAngajat = () => {
         .then(data => {
             toast.current.show({ severity: 'success', summary: 'Adaugat', detail: 'Angajat adaugat cu succes!' });
             setLoading(false);
-            //sendEmail();
+            sendEmail();
         })
         .catch(errors => {
             console.error('Error:', errors);

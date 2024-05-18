@@ -137,9 +137,9 @@ const User = () => {
                 const error = await response.json();
                 alert(error.message);
                 return;
-            }
+            } 
             const data = await response.json();
-            fetchConcedii(user.id);
+            fetchConcedii(user.idAngajat);
         } catch (error) {
             console.error('Eroare la adăugarea concediului:', error);
             alert('Eroare la adăugarea concediului. Verificați logurile pentru detalii.');
@@ -158,6 +158,7 @@ const User = () => {
             if (response.ok) {
                 const data = await response.json();
                 setShowConcedii(data);
+
             } else {
                 console.error('Failed to fetch concedii');
             }
@@ -167,10 +168,15 @@ const User = () => {
         }
     }
 
-    useEffect(() => {
-            fetchConcedii(user.id);
-    }, [user]);
-    
+    const handleFetchConcedii = () => {
+        if (user && user.idAngajat) {
+            fetchConcedii(user.idAngajat);
+            setDialogVisible(true);
+        } else {
+            console.error('User or user.idAngajat is undefined:', user);
+        }
+    }
+
     const dialogFooterTemplate = () => {
         return <Button label="Ok" icon="pi pi-check" onClick={() => setDialogVisible(false)} />;
     };
@@ -196,7 +202,7 @@ const User = () => {
                 <Button label="Cerere concediu" severity="secondary" text raised onClick={() => setVisible(true)} />
             </div>
             <div className={styles.btnConcediu}>
-                <Button label="Status cereri" severity="secondary" text raised onClick={() => setDialogVisible(true)} />
+                <Button label="Status cereri" severity="secondary" text raised onClick={handleFetchConcedii} />
             </div>
             <div>
             <Dialog header="Status cereri" visible={dialogVisible} style={{ width: '75vw' }} maximizable
