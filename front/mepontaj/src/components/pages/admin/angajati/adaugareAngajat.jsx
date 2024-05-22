@@ -91,38 +91,43 @@ const AdaugareAngajat = () => {
                 <Box m="20px">
                     <Header title="Adaugare angajati" subtitle="Adaugare angajati" />
                 </Box>
-                <div className="form">
-                    <FloatLabel className="p-float-label">
-                        <InputText id="nume" value={nume} onChange={(e) => setNume(e.target.value)} />
-                        <label htmlFor="nume">Nume</label>
-                    </FloatLabel>
-                    <FloatLabel className="p-float-label">
-                        <InputText id="prenume" value={prenume} onChange={(e) => setPrenume(e.target.value)} />
-                        <label htmlFor="prenume">Prenume</label>
-                    </FloatLabel>
-                    <FloatLabel className="p-float-label">
-                        <InputText id="CNP" value={cnp} onChange={handleCNPChange} />
-                        <label htmlFor="CNP">CNP</label>
-                    </FloatLabel>
-                    <FloatLabel className="p-float-label">
-                        <Calendar id="date" value={dataAngajare} onChange={(e) => setDataAngajare(e.target.value)} />
-                        <label htmlFor="date">Data angajare</label>
-                    </FloatLabel>
-                    <FloatLabel className="p-float-label">
-                        <InputText id="nrTel" value={numarTelefon} onChange={(e) => setNumarTelefon(e.target.value)} />
-                        <label htmlFor="phone">Număr telefon</label>
-                    </FloatLabel>
-                    <FloatLabel className="p-float-label">
-                        <InputText id="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                        <label htmlFor="email">Email</label>
-                    </FloatLabel>
-                    <FloatLabel className="p-float-label">
-                        <Password id="password" value={parola} onChange={(e) => setParola(e.target.value)} />
-                        <label id="password">Parola</label>
-                    </FloatLabel>
-                </div>
-                <div className="btn">
-                    <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={() => { load();}} />
+                <div className="form-container">
+                    <div className="form">
+                        <FloatLabel className="p-float-label">
+                            <InputText id="nume" value={nume} onChange={(e) => setNume(e.target.value)} />
+                            <label htmlFor="nume">Nume</label>
+                        </FloatLabel>
+                        <FloatLabel className="p-float-label">
+                            <InputText id="prenume" value={prenume} onChange={(e) => setPrenume(e.target.value)} />
+                            <label htmlFor="prenume">Prenume</label>
+                        </FloatLabel>
+                        <FloatLabel className="p-float-label">
+                            <InputText id="CNP" value={cnp} onChange={handleCNPChange} />
+                            <label htmlFor="CNP">CNP</label>
+                        </FloatLabel>
+                        <FloatLabel className="p-float-label">
+                            <Calendar id="date" value={dataAngajare} onChange={(e) => setDataAngajare(e.target.value)} />
+                            <label htmlFor="date">Data angajare</label>
+                        </FloatLabel>
+                        <FloatLabel className="p-float-label">
+                            <InputText id="nrTel" value={numarTelefon} onChange={(e) => setNumarTelefon(e.target.value)} />
+                            <label htmlFor="phone">Număr telefon</label>
+                        </FloatLabel>
+                        <FloatLabel className="p-float-label">
+                            <InputText id="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <label htmlFor="email">Email</label>
+                        </FloatLabel>
+                        <FloatLabel className="p-float-label">
+                            <Password id="password" value={parola} onChange={(e) => setParola(e.target.value)} />
+                            <label id="password">Parola</label>
+                        </FloatLabel>
+                        <div className="btn">
+                            <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
+                        </div>
+                    </div>
+                    <div className="image-container">
+                        <img src={require('../../../assets/muncitori.png')}  alt="Angajat" />
+                    </div>
                 </div>
                 <Toast ref={toast} />
             </div>

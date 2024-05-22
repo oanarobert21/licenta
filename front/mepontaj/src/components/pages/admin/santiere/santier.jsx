@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import Header from "../Header";
 import { Box } from "@mui/material";
 import { DataTable } from 'primereact/datatable';
@@ -12,6 +12,7 @@ const Santier =() => {
     const [santier, setSantier] = useState(null);
     const [displayDialog, setDisplayDialog] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
+    const dt = useRef(null);
 
     const fetchSantiere = async () => {
         const response = await fetch('http://localhost:8090/api/santiere/getAllSantiere');
@@ -62,12 +63,70 @@ const Santier =() => {
         </React.Fragment>
     );
 
+    const exportCSV = (selectionOnly) => {
+        dt.current.exportCSV({ selectionOnly });
+    };
+
+    const exportPdf = () => {
+        import('jspdf').then((jsPDF) => {
+            import('jspdf-autotable').then(() => {
+                const doc = new jsPDF.default(0, 0);
+                doc.autoTable(exportColumns, santiere);
+                doc.save('santiere.pdf');
+            });
+        });
+    };
+
+    const exportExcel = () => {
+        import('xlsx').then((xlsx) => {
+            const worksheet = xlsx.utils.json_to_sheet(santiere);
+            const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+            const excelBuffer = xlsx.write(workbook, {
+                bookType: 'xlsx',
+                type: 'array'
+            });
+
+            saveAsExcelFile(excelBuffer, 'santiere');
+        });
+    };
+
+    const saveAsExcelFile = (buffer, fileName) => {
+        import('file-saver').then((module) => {
+            if (module && module.default) {
+                let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+                let EXCEL_EXTENSION = '.xlsx';
+                const data = new Blob([buffer], {
+                    type: EXCEL_TYPE
+                });
+
+                module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+            }
+        });
+    };
+
+    const exportColumns = [
+        { title: 'Nume', dataKey: 'nume' },
+        { title: 'Latitudine', dataKey: 'latitudine' },
+        { title: 'Longitudine', dataKey: 'longitudine' },
+        { title: 'Localitate', dataKey: 'localitate' },
+        { title: 'Judet', dataKey: 'judet' },
+        { title: 'Adresa', dataKey: 'adresa' }
+    ];
+
+    const header = (
+        <div className="flex align-items-center justify-content-end gap-1">
+            <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" />
+            <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
+            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" />
+        </div>
+    );
+
     return(
         <Box m="20px">
         <Header title="Santiere" subtitle="Vizualizare santiere" />
-        <DataTable value={santiere} paginator rows={10} 
+        <DataTable ref={dt} value={santiere} paginator rows={10} 
             globalFilter={globalFilter} responsiveLayout="scroll"
-            selectionMode="single" onRowSelect={onRowSelect}>
+            selectionMode="single" onRowSelect={onRowSelect} header={header}>
             <Column field="nume" header="Nume" sortable filter filterPlaceholder="Search" style={{ width: '25%' }} />
             <Column field="latitudine" header="Latitudine" />
             <Column field="longitudine" header="Longitudine" />

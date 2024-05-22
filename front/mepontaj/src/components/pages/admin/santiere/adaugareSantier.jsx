@@ -6,7 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { FloatLabel } from 'primereact/floatlabel';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import '../angajati/adaugareAngajati.css';
+import '../santiere/santier.css';
 
 const AdaugareSantier = () => {
     const [nume, setNume] = useState('');
@@ -59,7 +59,7 @@ const AdaugareSantier = () => {
             <Box m="20px">
                 <Header title="Adaugare șantiere" subtitle="Adaugare șantiere" />
             </Box>
-            <div className="form">
+            <div className="formularAsignare">
                 <FloatLabel className="p-float-label">
                     <InputText id="nume" value={nume} onChange={(e) => setNume(e.target.value)} />
                     <label htmlFor="nume">Nume</label>

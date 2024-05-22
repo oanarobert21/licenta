@@ -1,21 +1,97 @@
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden; /* Previne overflow-ul */
+}
+
+.form-container {
+    display: flex;
+    margin: 20px;
+    flex-direction: row;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
 .form {
     display: flex;
-    margin:20px;
     flex-direction: column;
-    gap: 3rem;
-}
-.form .p-float-label {
-    flex-grow: 1; 
-    display: flex;
-    flex-direction: column;
-    width: 20rem; 
-    height: 2rem;
+    gap: 1rem;
+    flex: 1;
 }
 
+.form .p-float-label {
+    width: 100%; /* Asigură-te că etichetele flotante ocupă întreaga lățime a containerului */
+    margin-bottom: 1rem;
+}
+
+.p-float-label input,
+.p-float-label .p-calendar input,
+.p-float-label .p-password input {
+    width: 100%; 
+    padding: 0.75rem; 
+    font-size: 1rem; /* Setează dimensiunea fontului pentru a fi mai mare */
+    box-sizing: border-box; /* Asigură-te că padding-ul este inclus în lățime */
+}
+
+.p-float-label .p-calendar,
+.p-float-label .p-password {
+    width: 100%; /* Asigură-te că calendarele și câmpurile de parolă ocupă întreaga lățime a containerului */
+}
 
 .btn Button{
-    margin: 20px;
-    margin-top: 20px;
-    width: 20rem; 
+    margin-top: 10px;
+    width: 40rem; 
     font-size: 1rem; 
 } 
+
+.image-container {
+    display: none; /* Ascunde imaginea implicit */
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+/* @media (min-width: 500px) {
+    .image-container {
+        display: flex; 
+    }
+
+    .form-container {
+        flex-direction: row;
+    }
+} */
+
+@media (max-width: 500px) {
+    .form .p-float-label {
+        width: 100%; /* Ajustează lățimea pentru ecrane mici */
+    }
+    .btn Button{
+        width: 100%;
+    } 
+}
+
+@media (min-width: 768px) {
+    .image-container {
+        display: flex; /* Afișează imaginea pe ecrane mari */
+    }
+
+    .form-container {
+        flex-direction: row;
+    }
+
+    .form .p-float-label {
+        width: 100%; /* Ajustează lățimea pentru ecrane medii */
+    }
+}
+
+

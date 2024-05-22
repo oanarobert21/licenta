@@ -5,6 +5,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import '../angajati/angajati.css';
 
 const AsignareAngajat = () => {
     const [angajati, setAngajati] = useState([]);
@@ -89,7 +90,7 @@ const AsignareAngajat = () => {
             <Box m="20px">
                 <Header title="Asignare angajati" subtitle="Asignare angajati" />
             </Box>
-            <div className="form">
+            <div className="formularAsignare">
                 <Dropdown value={selectedAngajat} options={angajati} onChange={(e) => setSelectedAngajat(e.value)}
                     optionLabel="label" placeholder="Selectează un angajat" filter />
                 <MultiSelect value={selectedSantiere} options={santiere} onChange={(e) => setSelectedSantiere(e.value)}

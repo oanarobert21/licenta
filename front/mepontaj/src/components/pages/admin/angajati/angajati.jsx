@@ -1,7 +1,7 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../../theme";
 import Header from "../Header";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import { classNames } from 'primereact/utils';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { DataTable } from 'primereact/datatable';
@@ -16,6 +16,7 @@ const Angajati = () => {
     const [employee, setEmployee] = useState(null);
     const [displayDialog, setDisplayDialog] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
+    const dt = useRef(null);
     const handleCNPChange = (e) => {
         const input = e.target.value;
         if (input === '' || (input.length <= 13 && /^[0-9\b]+$/.test(input))) {
@@ -71,12 +72,76 @@ const Angajati = () => {
         </React.Fragment>
     );
 
+    const exportCSV = (selectionOnly) => {
+        dt.current.exportCSV({ selectionOnly });
+    };
+
+    const exportPdf = () => {
+        import('jspdf').then((jsPDF) => {
+            import('jspdf-autotable').then(() => {
+                const doc = new jsPDF.default(0, 0);
+                doc.autoTable(exportColumns, employees);
+                doc.save('angajati.pdf');
+            });
+        });
+    };
+
+    const exportExcel = () => {
+        import('xlsx').then((xlsx) => {
+            const filteredData = employees.map(employee => {
+                return exportColumns.reduce((acc, col) => {
+                    acc[col.dataKey] = employee[col.dataKey];
+                    return acc;
+                }, {});
+            });
+            const worksheet = xlsx.utils.json_to_sheet(filteredData);
+            const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+            const excelBuffer = xlsx.write(workbook, {
+                bookType: 'xlsx',
+                type: 'array'
+            });
+
+            saveAsExcelFile(excelBuffer, 'angajati');
+        });
+    };
+
+    const saveAsExcelFile = (buffer, fileName) => {
+        import('file-saver').then((module) => {
+            if (module && module.default) {
+                let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+                let EXCEL_EXTENSION = '.xlsx';
+                const data = new Blob([buffer], {
+                    type: EXCEL_TYPE
+                });
+
+                module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+            }
+        });
+    };
+
+    const exportColumns = [
+        { title: 'Nume', dataKey: 'nume' },
+        { title: 'Prenume', dataKey: 'prenume' },
+        { title: 'CNP', dataKey: 'cnp' },
+        { title: 'Data angajarii', dataKey: 'dataAngajare' },
+        { title: 'Numar telefon', dataKey: 'numarTelefon' },
+        { title: 'Email', dataKey: 'email' }
+    ];
+
+    const header = (
+        <div className="flex align-items-center justify-content-end gap-2">
+            <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" />
+            <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
+            <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" />
+        </div>
+    );
+
     return (
         <Box m="20px">
             <Header title="Angajați" subtitle="Vizualizare angajați" />
-            <DataTable value={employees} paginator rows={10} 
+            <DataTable ref={dt} value={employees} paginator rows={10} 
                 globalFilter={globalFilter} responsiveLayout="scroll"
-                selectionMode="single" onRowSelect={onRowSelect}>
+                selectionMode="single" onRowSelect={onRowSelect} header={header}>
                 <Column field="nume" header="Nume" sortable filter filterPlaceholder="Search" style={{ width: '25%' }} />
                 <Column field="prenume" header="Prenume" />
                 <Column field="cnp" header="CNP" />
