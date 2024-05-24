@@ -1,9 +1,11 @@
-.formularAsignare {
+.containerSantier {
     display: flex;
-    margin:20px;
-    flex-direction: column;
-    gap: 3rem;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
 }
+
 .formularAsignare .p-float-label {
     flex-grow: 1; 
     display: flex;
@@ -12,10 +14,29 @@
     height: 2rem;
 }
 
+.map-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-.btn Button{
-    margin: 20px;
-    margin-top: 20px;
+.btnSantier Button{
+    margin-top: 10px;
     width: 20rem; 
     font-size: 1rem; 
-} 
+}
+
+@media (max-width: 768px) {
+    .containerSantier {
+        flex-direction: column;
+    }
+
+    .formularAsignare, .map-container {
+        width: 100%;
+    }
+
+    .map-container {
+        margin-top: 20px;
+    }
+}

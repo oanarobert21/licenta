@@ -114,7 +114,42 @@ const addPontaj = async (req, res) => {
     }
 };
 
+const getPontajByIdAngajat = async (req, res) => {
+    try {
+        const { idAngajat } = req.params;
+        const pontaje = await Pontaj.findAll({
+            where: { idAngajat: idAngajat },
+            include: [
+                {
+                    model: Angajati,
+                    attributes: ['nume', 'prenume']
+                },
+                {
+                    model: Santier,
+                    attributes: ['nume']
+                }
+            ]
+        });
+        if (pontaje.length === 0) {
+            return res.status(404).json({ message: 'Nu au fost găsite pontaje pentru acest angajat.' });
+        }
+        const result = pontaje.map(pontaj => ({
+            numeAngajat: `${pontaj.Angajati.nume} ${pontaj.Angajati.prenume}`,
+            start: pontaj.start,
+            final: pontaj.final,
+            durata: pontaj.durata,
+            numeSantier: pontaj.Santier.nume
+        }));
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
 module.exports = {
     addPontaj,
-    verifyToken
+    verifyToken,
+    getPontajByIdAngajat
 };

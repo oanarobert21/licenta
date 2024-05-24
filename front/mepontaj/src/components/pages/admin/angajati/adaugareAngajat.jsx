@@ -121,8 +121,8 @@ const AdaugareAngajat = () => {
                             <Password id="password" value={parola} onChange={(e) => setParola(e.target.value)} />
                             <label id="password">Parola</label>
                         </FloatLabel>
-                        <div className="btn">
-                            <Button id="btnB" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
+                        <div className="btnAngajati">
+                            <Button id="btnAngajati" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
                         </div>
                     </div>
                     <div className="image-container">
