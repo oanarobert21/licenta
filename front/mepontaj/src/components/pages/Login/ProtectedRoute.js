@@ -17,3 +17,5 @@ const ProtectedRoute = ({ children, allowedFor }) => {
 };
 
 export default ProtectedRoute;
+
+

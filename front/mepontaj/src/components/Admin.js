@@ -12,6 +12,7 @@ import AsignareAngajat from './pages/admin/angajati/asignareAngajat';
 import Concedii from './pages/admin/concedii/concedii';
 import Santier from './pages/admin/santiere/santier';
 import Pontaje from './pages/admin/pontaje/pontaje';
+import StatisticiPontaje from './pages/admin/grafice/statisticiPontaje';
 
 function Admin() {
   const [theme, colorMode] = useMode();
@@ -32,6 +33,7 @@ function Admin() {
               <Route path="concedii" element={<Concedii />} />
               <Route path="santiere" element={<Santier />} />
               <Route path="pontaje" element={<Pontaje />} />
+              <Route path="statistici/pontaje" element={<StatisticiPontaje />} />
             </Routes>
           </main>
         </div>

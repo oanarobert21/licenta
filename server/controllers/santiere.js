@@ -52,7 +52,7 @@ const controller = {
         const { idAngajat, idSantiere } = req.body; 
         try {
         if (!idAngajat || !idSantiere || !idSantiere.length) {
-            return res.status(400).json({ message: "Informații insuficiente pentru a asigna angajatul." });
+            return res.status(400).json({ message: "Informatii insuficiente pentru a asigna angajatul." });
         }
         const angajat = await Angajati.findByPk(idAngajat);
         if (!angajat) {

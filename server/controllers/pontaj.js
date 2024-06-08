@@ -57,11 +57,9 @@ const addPontaj = async (req, res) => {
                 idSantier = site.Santier.id;
             }
         });
-
         if (!isWithinAnySite) {
             return res.status(403).json({ message: "Nu esti in perimetrul niciunui santier asignat." });
         }
-
         if (type === 'start') {
             const existingPontaj = await Pontaj.findOne({
                 where: {
@@ -70,7 +68,6 @@ const addPontaj = async (req, res) => {
                     final: null
                 }
             });
-
             if (existingPontaj) {
                 return res.status(409).json({ message: 'Pontajul de început a fost deja înregistrat astăzi.' });
             }

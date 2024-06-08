@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './User.module.css';
 import {useNavigate} from 'react-router-dom';
 import { useUser } from './UserContext';
@@ -9,6 +9,7 @@ import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Toast } from 'primereact/toast';
 import {format} from 'date-fns';
 import 'primeflex/primeflex.css'; 
 
@@ -23,6 +24,7 @@ const User = () => {
     const [userLocation, setUserLocation] = useState(null);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [showConcedii, setShowConcedii] = useState([]);
+    const toast = useRef(null);
     const navigate = useNavigate(); 
 
     const handleLogout = () => {
@@ -96,15 +98,15 @@ const User = () => {
                     type
                 })
             });
-
             if (!response.ok) {
                 const error = await response.json();
-                alert(error.message);
+                // alert(error.message);
+                toast.current.show({ severity: 'error', summary: 'Pontaj', detail: error.message })
                 return;
-            }
-
+            } else {
             const data = await response.json();
-            console.log(`Răspuns pontaj ${type}:`, data);
+            toast.current.show({ severity: 'success', summary: 'Pontaj', detail: `Pontajul ${type} a fost înregistrat cu succes.` });
+            }
         } catch (error) {
             console.error(`Eroare la pontajul ${type}:`, error);
             alert(`Eroare la pontajul ${type}. Verificați logurile pentru detalii.`);
@@ -132,14 +134,16 @@ const User = () => {
                     status: 'În așteptare'
                 })
             });
-
             if (!response.ok) {
                 const error = await response.json();
                 alert(error.message);
+                toast.current.show({ severity: 'error', summary: 'Concediu', detail: error.message });
                 return;
-            } 
+            } else{
             const data = await response.json();
+            toast.current.show({ severity: 'success', summary: 'Concediu', detail: 'Cererea de concediu a fost înregistrată cu succes.' });
             fetchConcedii(user.idAngajat);
+            }
         } catch (error) {
             console.error('Eroare la adăugarea concediului:', error);
             alert('Eroare la adăugarea concediului. Verificați logurile pentru detalii.');
@@ -236,6 +240,7 @@ const User = () => {
                 </div>
             </Dialog>
         </div>
+        <Toast ref={toast} />
         </div>
     );
 }

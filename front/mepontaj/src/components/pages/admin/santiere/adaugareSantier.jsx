@@ -20,7 +20,7 @@ const initialCenter = {
 };
 
 const options = {
-    mapTypeControl: false, // Disable map type (Map/Satellite) buttons
+    mapTypeControl: false, 
 };
 
 
@@ -56,8 +56,27 @@ const AdaugareSantier = () => {
             const place = places[0];
             const lat = place.geometry.location.lat();
             const lng = place.geometry.location.lng();
+
+            const addressComponents = place.address_components;
+            let locality = '';
+            let county = '';
+            let fullAddress = place.formatted_address;
+
+            addressComponents.forEach(component => {
+                const types = component.types;
+                if (types.includes('locality')) {
+                    locality = component.long_name;
+                }
+                if (types.includes('administrative_area_level_1')) {
+                    county = component.long_name;
+                }
+            });
+
             setLat(lat);
             setLong(lng);
+            setLocalitate(locality);
+            setJudet(county);
+            setAdresa(fullAddress);
             setSelected({ lat, lng });
             setCenter({ lat, lng });
         }

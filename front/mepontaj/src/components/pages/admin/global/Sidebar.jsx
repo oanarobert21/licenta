@@ -8,13 +8,16 @@ import { tokens } from "../../../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
+import FestivalIcon from '@mui/icons-material/Festival';
+import HolidayVillageOutlinedIcon from '@mui/icons-material/HolidayVillageOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -133,14 +136,14 @@ const Sidebar = () => {
             <Item
               title="Adaugare șantier"
               to="/admin/adaugare-santier"
-              icon={<MapOutlinedIcon />}
+              icon={<AddLocationAltOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Vizualizare șantiere"
               to="/admin/santiere"
-              icon={<HelpOutlineOutlinedIcon />}
+              icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -154,7 +157,7 @@ const Sidebar = () => {
             <Item
               title="Vizualizare pontaje"
               to="/admin/pontaje"
-              icon={<HelpOutlineOutlinedIcon />}
+              icon={<EngineeringOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -168,17 +171,31 @@ const Sidebar = () => {
             <Item
               title="Vizualizare concedii"
               to="/admin/concedii"
-              icon={<BarChartOutlinedIcon />}
+              icon={<HolidayVillageOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+            Statistici
+            </Typography>
             <Item
-              title="Pie Chart"
-              to="/pie"
+              title="Pontaje"
+              to="/admin/statistici/pontaje"
               icon={<PieChartOutlineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+            {/* <Item
+              title="Pie Chart"
+              to="/pie"
+              icon={<BarChartOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            /> */}
             
           </Box>
         </Menu>

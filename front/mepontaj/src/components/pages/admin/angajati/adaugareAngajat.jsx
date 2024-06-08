@@ -89,7 +89,7 @@ const AdaugareAngajat = () => {
         <div className="app">
             <div className="content">
                 <Box m="20px">
-                    <Header title="Adaugare angajati" subtitle="Adaugare angajati" />
+                    <Header title="Adaugare angajați" subtitle="Adaugare angajați" />
                 </Box>
                 <div className="form-container">
                     <div className="form">
