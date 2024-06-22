@@ -8,7 +8,6 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 const Concedii = () => {
-
     const[concedii, setConcedii] = useState([]);
 
     const fetchConcedii = async () => {
@@ -20,6 +19,7 @@ const Concedii = () => {
                 nume: concediu.Angajati.nume,
                 prenume: concediu.Angajati.prenume
             }));
+            dataServer.sort((a, b) => a.status === 'In asteptare' ? 1 : -1);
             setConcedii(dataServer);
         } else {
             console.error('Failed to fetch concedii');

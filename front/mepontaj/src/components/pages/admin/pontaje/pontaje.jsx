@@ -20,10 +20,7 @@ const Pontaje = () => {
     const [selectedAngajat, setSelectedAngajat] = useState(null);
     const [pontaje, setPontaje] = useState([]);
     const toast = useRef(null);
-    const [filters, setFilters] = useState({
-        global: { value: null, matchMode: 'contains' },
-        start: { value: null, matchMode: 'custom' }
-    });
+    const [dateRange, setDateRange] = useState(null);
     const dt = useRef(null);
 
 
@@ -71,24 +68,10 @@ const Pontaje = () => {
             setPontaje([]);
         }
     }
-
-    // const onDateChange = (e) => {
-    //     const selectedDate = e.value;
-    //     setFilters({
-    //         ...filters,
-    //         start: {
-    //             value: selectedDate,
-    //             matchMode: 'custom',
-    //             filterFunction: (value, filter) => {
-    //                 if (!filter) return true;
-    //                 if (!value) return false;
-    //                 const filterDate = new Date(filter).toISOString().split('T')[0];
-    //                 const valueDate = new Date(value).toISOString().split('T')[0];
-    //                 return valueDate === filterDate;
-    //             }
-    //         }
-    //     });
-    // };
+    
+    const onDateChange = (e) => {
+        setDateRange(e.value);
+    };
 
     const formatDateTime = (value) => {
         return format(new Date(value), 'dd/MM/yyyy HH:mm:ss');
@@ -118,7 +101,7 @@ const Pontaje = () => {
     ];
 
     const exportCSV = () => {
-        const exportData = formatExportData(pontaje);
+        const exportData = formatExportData(filteredPontaje);
         const fileName = getSelectedAngajatLabel();
         const csv = exportData.map(row => exportColumns.map(col => row[col.dataKey]).join(',')).join('\n');
         const csvHeader = exportColumns.map(col => col.title).join(',');
@@ -127,34 +110,45 @@ const Pontaje = () => {
         saveAs(blob, `${fileName}.csv`);
     };
 
-    // const exportPdf = () => {
-    //     const exportData = formatExportData(pontaje);
-    //     const fileName = getSelectedAngajatLabel();
-    //     const doc = new jsPDF();
-    //     doc.autoTable({
-    //         head: [exportColumns.map(col => col.title)],
-    //         body: exportData.map(row => Object.values(row))
-    //     });
-    //     doc.save(`${fileName}.pdf`);
-    // };
-
     const exportPdf = () => {
-        const exportData = formatExportData(pontaje);
+        const exportData = formatExportData(filteredPontaje);
         const fileName = getSelectedAngajatLabel();
-        const angajatLabel = 'Pontaje '+getSelectedAngajatLabel().replace(/_/g, ' ') ;
+        const angajatLabel = 'Pontaje ' + getSelectedAngajatLabel().replace(/_/g, ' ');
         const doc = new jsPDF();
+    
         doc.setFontSize(18);
-        doc.text(angajatLabel, doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+        doc.setFont("poppins");
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const textWidth = doc.getTextWidth(angajatLabel);
+        const x = (pageWidth - textWidth) / 2;
+        doc.text(angajatLabel, x, 20);
+    
         doc.autoTable({
             startY: 30,
             head: [exportColumns.map(col => col.title)],
-            body: exportData.map(row => Object.values(row))
+            body: exportData.map(row => exportColumns.map(col => row[col.dataKey])),
+            styles: { cellPadding: 2, fontSize: 10 },
+            columnStyles: {
+                0: { cellWidth: 'auto', minCellHeight: 10 }, 
+                1: { cellWidth: 'auto' },
+                2: { cellWidth: 'auto' },
+                3: { cellWidth: 'auto' },
+                4: { cellWidth: 'auto' }
+            },
+            headStyles: {
+                fillColor: [41, 128, 185]
+            },
+            bodyStyles: {
+                valign: 'top',
+                halign: 'left',
+            }
         });
         doc.save(`${fileName}.pdf`);
     };
+    
 
     const exportExcel = () => {
-        const exportData = formatExportData(pontaje);
+        const exportData = formatExportData(filteredPontaje);
         const fileName = getSelectedAngajatLabel();
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
@@ -172,6 +166,15 @@ const Pontaje = () => {
         saveAs(data, `${fileName}_export_${new Date().getTime()}${EXCEL_EXTENSION}`);
     };
 
+    const filteredPontaje = pontaje.filter(p => {
+        if (!dateRange) return true;
+        const [startDate, endDate] = dateRange;
+        const pontajDate = new Date(p.start).getTime();
+        if (startDate && pontajDate < new Date(startDate).getTime()) return false;
+        if (endDate && pontajDate == new Date(endDate).getTime()) return false;
+        return true;
+    });
+
     const header = (
         <div className="flex align-items-center justify-content-end gap-1">
             <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" />
@@ -188,10 +191,10 @@ const Pontaje = () => {
             <div className="pontaje">
                 <Dropdown value={selectedAngajat} options={angajati} onChange={(e) => setSelectedAngajat(e.value)}
                     optionLabel="label" placeholder="Selectează un angajat" filter showClear />
-                {/* <Calendar value={filters.start.value} onChange={onDateChange} placeholder="Selectează o dată" dateFormat="yy-mm-dd" /> */}
+                <Calendar value={dateRange} onChange={onDateChange} placeholder="Selectează un interval" selectionMode="range" dateFormat="dd/mm/yy" showClear />
             </div>
             <div className="tabelPontaje">
-                <DataTable value={pontaje} ref={dt} paginator rows={10} header={header} rowsPerPageOptions={[5, 10, 25]} emptyMessage="Nu există pontaje">
+                <DataTable value={filteredPontaje} ref={dt} paginator rows={10} header={header} rowsPerPageOptions={[5, 10, 25]} emptyMessage="Nu există pontaje">
                     <Column field="numeAngajat" header="Nume" />
                     <Column field="start" header="Pontaj initial" body={(rowData) => formatDateTime(rowData.start)} />
                     <Column field="final" header="Pontaj final" body={(rowData) => formatDateTime(rowData.final)}/>

@@ -17,9 +17,13 @@ const AdaugareAngajat = () => {
     const [dataAngajare, setDataAngajare] = useState('');
     const [numarTelefon, setNumarTelefon] = useState('');
     const [email, setEmail] = useState('');
-    const [parola, setParola] = useState('');
     const [loading, setLoading] = useState(false);
     const toast = useRef(null);
+
+    // useEffect(() => {
+    //     emailjs.init("HbUMSyK2TONpeA8fs");
+    // }, []);
+
     const handleCNPChange = (e) => {
         const input = e.target.value;
         if (input === '' || (input.length <= 13 && /^[0-9\b]+$/.test(input))) {
@@ -27,7 +31,16 @@ const AdaugareAngajat = () => {
         }
     };
 
-    const sendEmail = async () => {
+    const generatePassword = () => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let parola = "";
+        for (let i = 0; i < 8; i++) {
+            parola += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return parola;
+    }
+
+    const sendEmail = async (parola) => {
         const serviceId = "service_kcvdsh5";
         const templateId = "template_5mfr32x";
         try {
@@ -48,7 +61,8 @@ const AdaugareAngajat = () => {
     // fetch(process.env.API_URL+'api/angajati/addAngajat'
     const load = () => {
         //setLoading(true);
-        const data = { nume, prenume, cnp, dataAngajare, numarTelefon, email, parola };
+        const parolaGenerata = generatePassword();
+        const data = { nume, prenume, cnp, dataAngajare, numarTelefon, email, parola: parolaGenerata };
         fetch('http://localhost:8090/api/angajati/addAngajat', {
             method: 'POST',
             headers: {
@@ -67,7 +81,7 @@ const AdaugareAngajat = () => {
         .then(data => {
             toast.current.show({ severity: 'success', summary: 'Adaugat', detail: 'Angajat adaugat cu succes!' });
             setLoading(false);
-            sendEmail();
+            sendEmail(parolaGenerata);
         })
         .catch(errors => {
             console.error('Error:', errors);
@@ -117,10 +131,10 @@ const AdaugareAngajat = () => {
                             <InputText id="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                             <label htmlFor="email">Email</label>
                         </FloatLabel>
-                        <FloatLabel className="p-float-label">
+                        {/* <FloatLabel className="p-float-label">
                             <Password id="password" value={parola} onChange={(e) => setParola(e.target.value)} />
                             <label id="password">Parola</label>
-                        </FloatLabel>
+                        </FloatLabel> */}
                         <div className="btnAngajati">
                             <Button id="btnAngajati" label="Submit" icon="pi pi-check" loading={loading} onClick={load} />
                         </div>

@@ -109,7 +109,7 @@ const StatisticiPontaje = () => {
                 {
                     label: 'Numarul de pontaje',
                     data: Object.values(santierCount),
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    backgroundColor: 'rgba(75, 192, 192, 1)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1,
                 },
@@ -134,7 +134,7 @@ const StatisticiPontaje = () => {
                                 <Pie data={chartData} />
                             </div>
                         ) : (
-                            <p>Nu există date pentru a genera graficul.</p>
+                            <p>Nu există date pentru a genera graficele.</p>
                         )}
                     </div>
                 </Grid>
@@ -145,7 +145,7 @@ const StatisticiPontaje = () => {
                                 <Bar data={chartBarData} options={{ maintainAspectRatio: false }} />
                             </div>
                         ) : (
-                            <p>Nu există date pentru a genera graficul.</p>
+                            <p></p>
                         )}
                     </div>
                 </Grid>

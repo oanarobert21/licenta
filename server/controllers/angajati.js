@@ -2,43 +2,42 @@ const Angajati = require('../models').Angajati;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Mailgun = require('mailgun-js');
+const Joi = require('@hapi/joi');
 
-const validareAngajat = async (angajatBody) => {
-    const errors = [];
-    const requiredFields = ['nume', 'prenume', 'cnp', 'dataAngajare', 'numarTelefon', 'parola', 'email'];
-    requiredFields.forEach(field => {
-        if (!angajatBody[field]) {
-            errors.push(`${field} trebuie completat.`);
-        }
-    });
+// const validareAngajat = async (angajatBody) => {
+//     const errors = [];
+//     const requiredFields = ['nume', 'prenume', 'cnp', 'dataAngajare', 'numarTelefon', 'parola', 'email'];
+//     requiredFields.forEach(field => {
+//         if (!angajatBody[field]) {
+//             errors.push(`${field} trebuie completat.`);
+//         }
+//     });
+//     if (angajatBody.email && !/\S+@\S+\.\S+/.test(angajatBody.email)) {
+//         errors.push('Formatul email-ului este incomplet.');
+//     }
+//     if (angajatBody.cnp && !/^\d{13}$/.test(angajatBody.cnp)) {
+//         errors.push('CNP-ul trebuie sa aiba 13 caractere.');
+//     }
+//     if (angajatBody.numarTelefon && !/^\d{10}$/.test(angajatBody.numarTelefon)) {
+//         errors.push('Numarul de telefon trebuie sa fie de 10 caractere.');
+//     }
+//     if (angajatBody.parola && angajatBody.parola.length < 1) {
+//         errors.push('Parola trebuie adaugata.');
+//     }
+//     return errors;
+// }
 
-    if (angajatBody.email && !/\S+@\S+\.\S+/.test(angajatBody.email)) {
-        errors.push('Formatul email-ului este incomplet.');
-    }
+const schema = Joi.object({
+    nume: Joi.string().required(),
+    prenume: Joi.string().required(),
+    cnp: Joi.string().length(13).pattern(/^\d+$/).required(),
+    dataAngajare: Joi.date().required(),
+    numarTelefon: Joi.string().required().length(10),
+    email: Joi.string().email().required(),
+    isAdmin: Joi.boolean().valid(true),
+    parola: Joi.string().required(),
+});
 
-    if (angajatBody.cnp && !/^\d{13}$/.test(angajatBody.cnp)) {
-        errors.push('CNP-ul trebuie sa aiba 13 caractere.');
-    }
-
-    if (angajatBody.numarTelefon && !/^\d{10}$/.test(angajatBody.numarTelefon)) {
-        errors.push('Numarul de telefon trebuie sa fie de 10 caractere.');
-    }
-
-    if (angajatBody.parola && angajatBody.parola.length < 1) {
-        errors.push('Parola trebuie adaugata.');
-    }
-
-    const emailExists = await Angajati.findOne({ where: { email: angajatBody.email } });
-    if (emailExists) {
-        errors.push('Email-ul este deja folosit.');
-    }
-
-    const cnpExists = await Angajati.findOne({ where: { cnp: angajatBody.cnp } });
-    if (cnpExists) {
-        errors.push('CNP-ul este deja folosit.');
-    }
-    return errors;
-}
 
 const controller = {
     addAngajat: async (req, res) => {
@@ -52,23 +51,30 @@ const controller = {
             isAdmin: req.body.isAdmin,
             parola: req.body.parola,
             email: req.body.email,
-            // token: req.body.token
          }
-         const errors = await validareAngajat(userBody);
-         if (errors.length === 0) {
-            const parolaBycrypt = await bcrypt.hash(userBody.parola, 10);
-            userBody.parola = parolaBycrypt;
-            await Angajati.create(userBody);
-            res.status(201).json({
-                message: `Angajat adaugat cu succes!`,
-            });
-        } else {
-                res.status(400).json({ message: errors });
-            }
-        } catch (err) {
-            res.status(500).json({message: err.message});
+        const { error } = schema.validate(userBody, { abortEarly: false });
+        if (error) {
+            const errorMessages = error.details.map(err => err.message);
+            return res.status(400).json({ message: errorMessages });
         }
-    },
+        const emailExists = await Angajati.findOne({ where: { email: userBody.email } });
+        if (emailExists) {
+            return res.status(400).json({ message: 'Email-ul este deja folosit.' });
+        }
+        const cnpExists = await Angajati.findOne({ where: { cnp: userBody.cnp } });
+        if (cnpExists) {
+            return res.status(400).json({ message: 'CNP-ul este deja folosit.' });
+        }
+        const parolaBycrypt = await bcrypt.hash(userBody.parola, 10);
+        userBody.parola = parolaBycrypt;
+        await Angajati.create(userBody);
+        res.status(201).json({
+            message: `Angajat adăugat cu succes!`,
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+},
     getAllAngajati: async (req, res) => {
         try {
             const angajati = await Angajati.findAll();

@@ -90,7 +90,6 @@ const addPontaj = async (req, res) => {
             if (!pontaj) {
                 return res.status(404).json({ message: 'Pontajul de început nu a fost găsit pentru înregistrarea finalului sau a fost deja realizat pontajul final .' });
             }
-            
             pontaj.final = new Date();
             const durationInMilliseconds = pontaj.final.getTime() - pontaj.start.getTime(); 
             const durationInSeconds = Math.floor(durationInMilliseconds / 1000);

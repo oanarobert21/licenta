@@ -14,11 +14,13 @@ module.exports = (sequelize, DataTypes) =>{
             },
             latitudine:{
                 type: DataTypes.FLOAT,
-                allowNull:false
+                allowNull:false,
+                unique: true
             },
             longitudine:{
                 type: DataTypes.FLOAT,
-                allowNull:false
+                allowNull:false,
+                unique: true
             },
             raza:{
                 type: DataTypes.FLOAT,

@@ -1,17 +1,16 @@
 const Concedii = require('../models').Concedii;
 const Angajati = require('../models').Angajati;
 const jwt = require('jsonwebtoken');
+const Joi = require('@hapi/joi');
 
-const validareConcediu = async (concediuBody) => {
-    const errors = [];
-    const requiredFields = ['idAngajat', 'dataInceput', 'dataSfarsit','motiv','status'];
-    requiredFields.forEach(field => {
-        if (!concediuBody[field]) {
-            errors.push(`${field} trebuie completat.`);
-        }
-    });
-    return errors;
-}
+const schema = Joi.object({
+    idAngajat: Joi.number().required(),
+    tipConcediu: Joi.string().required(),
+    dataInceput: Joi.date().required(),
+    dataSfarsit: Joi.date().required(),
+    motiv: Joi.string().required(),
+    status: Joi.string().required()
+});
 
 const verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
@@ -40,8 +39,8 @@ const controller = {
             status
         };
         try {
-            const errors = await validareConcediu(concediuBody);
-            if (errors.length > 0) {
+            const errors = schema.validate(concediuBody, { abortEarly: false }).error;
+            if (errors) {
                 return res.status(400).json({ message: errors });
             }
             await Concedii.create(concediuBody);

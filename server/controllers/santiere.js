@@ -1,6 +1,7 @@
 const Santier = require('../models').Santier;
 const Angajati = require('../models').Angajati;
 const AngajatiSantiere = require('../models').AngajatiSantiere;
+const Joi = require('@hapi/joi');
 
 const validareSantier = async (santierBody) => {
     const errors = [];
@@ -12,6 +13,16 @@ const validareSantier = async (santierBody) => {
     });
     return errors;
 }
+
+const schema = Joi.object({
+    nume: Joi.string().required(),
+    latitudine: Joi.number().required(),
+    longitudine: Joi.number().required(),
+    raza: Joi.number().required(),
+    localitate: Joi.string().required(),
+    judet: Joi.string().required(),
+    adresa: Joi.string().required()
+});
 
 const controller = {
     addSantier: async (req, res) => {
@@ -25,8 +36,8 @@ const controller = {
                 judet: req.body.judet,
                 adresa: req.body.adresa
             }
-            const errors = await validareSantier(santierBody);
-            if (errors.length === 0) {
+            const errors = schema.validate(santierBody, { abortEarly: false }).error;
+            if (!errors) {
                await Santier.create(santierBody);
                res.status(201).json({
                    message: `Santier adaugat cu succes!`,
@@ -36,7 +47,7 @@ const controller = {
                }
         } 
         catch(err){
-            res.status(500).json({message: err.message});
+            res.status(500).json({message: 'Santier adăugat deja în baza de date.'});
         }
     },
     getAllSantiere: async (req, res) => {
