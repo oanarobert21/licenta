@@ -1,0 +1,26 @@
+.calendar-container {
+    margin-top: 20px;
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.react-datepicker {
+    width: 100%;
+}
+
+.react-datepicker__day--selected {
+    background-color: #007bff;
+    color: white;
+}
+
+.react-big-calendar {
+    height: 500px;
+    margin-top: 20px;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+}

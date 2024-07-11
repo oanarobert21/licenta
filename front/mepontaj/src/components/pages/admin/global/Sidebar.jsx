@@ -18,6 +18,7 @@ import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlin
 import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
 import FestivalIcon from '@mui/icons-material/Festival';
 import HolidayVillageOutlinedIcon from '@mui/icons-material/HolidayVillageOutlined';
+import PermContactCalendarOutlinedIcon from '@mui/icons-material/PermContactCalendarOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -91,13 +92,13 @@ const Sidebar = () => {
           </MenuItem>
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-            <Item
+            {/* <Item
               title="Acasă"
               to="/admin"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -107,7 +108,7 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Vizualizare angajați"
-              to="/admin/angajati"
+              to="/admin"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -161,6 +162,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title="Calendar pontaje"
+              to="/admin/calendar"
+              icon={<PermContactCalendarOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -189,13 +197,13 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            {/* <Item
-              title="Pie Chart"
-              to="/pie"
+            <Item
+              title="Concedii"
+              to="/admin/statistici/concedii"
               icon={<BarChartOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
             
           </Box>
         </Menu>

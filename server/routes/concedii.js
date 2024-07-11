@@ -6,5 +6,6 @@ router.post("/addConcediu", verifyToken,concediiController.addConcediu);
 router.get("/getAllConcedii",concediiController.getAllConcedii);
 router.post("/updateConcediu/:id",concediiController.updateConcediu);
 router.get("/getConcediuByIdAngajat/:idAngajat", verifyToken, concediiController.getConcediuByIdAngajat);
+// router.get("/getConcediuByIdAngajat/:idAngajat", concediiController.getConcediuByIdAngajat);
 
 module.exports = router;

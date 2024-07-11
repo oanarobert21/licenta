@@ -203,6 +203,9 @@ const User = () => {
             <Button label="Pontaj final" severity="secondary" text raised onClick={() => performPontaj('final')} />           
             </div>
             <div className={styles.btnConcediu}>
+                <Button label="Pontaje realizate" severity="secondary" text raised onClick={handleFetchConcedii} />
+            </div>
+            <div className={styles.btnConcediu}>
                 <Button label="Cerere concediu" severity="secondary" text raised onClick={() => setVisible(true)} />
             </div>
             <div className={styles.btnConcediu}>

@@ -20,9 +20,6 @@ const AdaugareAngajat = () => {
     const [loading, setLoading] = useState(false);
     const toast = useRef(null);
 
-    // useEffect(() => {
-    //     emailjs.init("HbUMSyK2TONpeA8fs");
-    // }, []);
 
     const handleCNPChange = (e) => {
         const input = e.target.value;
@@ -81,7 +78,7 @@ const AdaugareAngajat = () => {
         .then(data => {
             toast.current.show({ severity: 'success', summary: 'Adaugat', detail: 'Angajat adaugat cu succes!' });
             setLoading(false);
-            sendEmail(parolaGenerata);
+            // sendEmail(parolaGenerata);
         })
         .catch(errors => {
             console.error('Error:', errors);

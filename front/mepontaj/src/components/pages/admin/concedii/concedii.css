@@ -1,0 +1,19 @@
+.concedii {
+    display: flex;
+    margin:20px;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    height: 500px;
+}

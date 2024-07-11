@@ -85,13 +85,16 @@ const controller = {
         }
     },
     getConcediuByIdAngajat: async (req, res) => {
-        const { idAngajat } = req.user;
+        const { idAngajat } = req.params;
         try {
             const concedii = await Concedii.findAll({
                 where: {
                     idAngajat
                 }
             });
+            if (concedii.length === 0) {
+                return res.status(404).json({ message: 'Nu au fost găsite concedii pentru acest angajat.' });
+            }
             res.status(200).json(concedii);
         } catch (err) {
             console.error(err);

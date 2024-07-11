@@ -40,7 +40,7 @@ const StatisticiPontaje = () => {
             }));
             setAngajati(formattedAngajati);
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'Fetching Error', detail: error.message });
+            toast.current.show({ severity: 'error', summary: 'Atenție!', detail: error.message });
             console.error('Error:', error);
         }
     }
@@ -49,14 +49,14 @@ const StatisticiPontaje = () => {
         try {
             const response = await fetch(`http://localhost:8090/api/pontaj/getPontajByIdAngajat/${idAngajat}`);
             if (!response.ok) {
-                throw new Error('Failed to fetch pontaje');
+                throw new Error('Nu există pontaje pentru angajatul selectat!');
             }
             const data = await response.json();
             setPontaje(data);
             processChartData(data);
             processBarData(data);
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'Fetching Error', detail: error.message });
+            toast.current.show({ severity: 'error', summary: 'Atenție!', detail: error.message });
             console.error('Error:', error);
             setPontaje([]);
         }
