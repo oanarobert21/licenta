@@ -15,6 +15,7 @@ import Pontaje from './pages/admin/pontaje/pontaje';
 import StatisticiPontaje from './pages/admin/grafice/statisticiPontaje';
 import StatisticiConcedii from './pages/admin/grafice/statisticiConcedii';
 import CalendarPontaje from './pages/admin/pontaje/calendar';
+import NotaDeFundamentare from './pages/admin/grafice/notaFundamentare';
 
 function Admin() {
   const [theme, colorMode] = useMode();
@@ -37,6 +38,7 @@ function Admin() {
               <Route path="calendar" element={<CalendarPontaje />} />
               <Route path="statistici/pontaje" element={<StatisticiPontaje />} />
               <Route path="statistici/concedii" element={<StatisticiConcedii />} />
+              <Route path="statistici/notaFundamentare" element={<NotaDeFundamentare />} />
             </Routes>
           </main>
         </div>

@@ -74,12 +74,12 @@ const AsignareAngajat = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to save data');
+                throw new Error('Angajatul este deja asignat la acest santier!');
             }
             await response.json(); 
             toast.current.show({ severity: 'success', summary: 'Success', detail: 'Datele au fost salvate cu succes!' });
         } catch (error) {
-            toast.current.show({ severity: 'error', summary: 'Saving Error', detail: error.message });
+            toast.current.show({ severity: 'error', summary: 'Eroare', detail: error.message });
             console.error('Error:', error);
         }
         console.log("Trimite la backend:", { idAngajat: selectedAngajat, idSantiere: selectedSantiere });

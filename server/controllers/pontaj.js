@@ -143,9 +143,40 @@ const getPontajByIdAngajat = async (req, res) => {
     }
 };
 
+const getPontajeBySantier = async (req, res) => {
+    try {
+        const { idSantier } = req.params;
+        const pontaje = await Pontaj.findAll({
+            where: { idSantier },
+            include: [
+                {
+                    model: Angajati,
+                    attributes: ['nume', 'prenume']
+                }
+            ]
+        });
+
+        if (!pontaje.length) {
+            return res.status(404).json({ message: 'Nu au fost găsite pontaje pentru acest șantier.' });
+        }
+
+        const result = pontaje.map(pontaj => ({
+            nume: pontaj.Angajati.nume,
+            prenume: pontaj.Angajati.prenume,
+            durata: pontaj.durata
+        }));
+
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 module.exports = {
     addPontaj,
     verifyToken,
-    getPontajByIdAngajat
+    getPontajByIdAngajat,
+    getPontajeBySantier 
 };
+
+

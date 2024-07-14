@@ -19,6 +19,7 @@ import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
 import FestivalIcon from '@mui/icons-material/Festival';
 import HolidayVillageOutlinedIcon from '@mui/icons-material/HolidayVillageOutlined';
 import PermContactCalendarOutlinedIcon from '@mui/icons-material/PermContactCalendarOutlined';
+import FilePresentOutlinedIcon from '@mui/icons-material/FilePresentOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -201,6 +202,13 @@ const Sidebar = () => {
               title="Concedii"
               to="/admin/statistici/concedii"
               icon={<BarChartOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Notă fundamentare"
+              to="/admin/statistici/notaFundamentare"
+              icon={<FilePresentOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
